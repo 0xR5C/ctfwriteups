@@ -71,6 +71,10 @@ curl -X GET -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjN
 ***PrivEsc***
 `find / -type f -perm -u=s 2>/dev/null`
 
+Find `/opt/count` and visiting `/opt` there is a .c file also.
+
+`strings CoreDump`
+
 
 
 
