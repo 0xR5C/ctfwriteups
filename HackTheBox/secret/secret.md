@@ -73,6 +73,7 @@ curl -X GET -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjN
 
 Find `/opt/count` and visiting `/opt` there is a .c file also.
 
+
 `strings CoreDump`
 
 
