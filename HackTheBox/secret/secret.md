@@ -1,20 +1,21 @@
 # User
 
 ## Enumeration
-```
-test
-```
 
-Log In 
+
+
+## Website Enumeration
+
+This is a website of some kind of an open-source API, that has a live demo mode, which heads to `api/priv`. There is a documentation page, that has a lot of information about how the API works.
+First, in the Log In section, there is an example of a log in request with an email and a password and I tried to see, if this happens to be a valid admin account.
 ```
 curl -X POST -H 'Content-Type: application/json' -i 'http://10.10.11.120/api/user/login' --data '{
 "email": "root@dasith.works",
 "password": "Kekc8swFgD6zU"
 }'
 ```
-But response returned, wrong password.
-
-Register user
+No luck here, this wasn't succesfull unfortunately. 
+So I proceeded to register a new user, using the information given.
 ```
 curl -X POST -H 'Content-Type: application/json' -i 'http://10.10.11.120/api/user/register' --data '{
 "name": "testuser",
@@ -22,7 +23,7 @@ curl -X POST -H 'Content-Type: application/json' -i 'http://10.10.11.120/api/use
 "password": "testuser"
 }'
 ```
-with response `{"user":"testuser"}`
+with a succesfull response `{"user":"testuser"}`.
 
 Log In with these credentials
 ```
