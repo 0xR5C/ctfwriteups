@@ -39,17 +39,16 @@ curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1
 ```
 and response is `{"role":{"role":"you are normal user","desc":"testuser"}}`. So I logged in as a user, but I need to find an other way to gain access as admin. I'm going to keep looking on the website for any other information, that could be helpful.
 
-
-I find out tha
-
+I find out that, I can download the source code, which can be really useful.
 
 
+Using jwt.io and the JWT token I got with "testuser", I will try to forge a new one with `username="theadmin"` and the `TOKEN_SECRET=secret`(email doesn't really matter, since it checks only if `username="theadmin"`).
 ![jwtsecret](img/jwtfake.png)
 Then I try to login with forged JWT token with `TOKEN_SECRET=secret`
 ```
 curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.DTKfqkj0GUAI46OLUGTwoOnBEgbQ0PkWk9pVMUz95g4' -i 'http://10.10.11.120/api/priv'
 ```
-But it's rejected. This means, that the token secret has been chenged, before the source code was uploaded.
+But it's rejected. This means, that the token secret has been changed, before the source code was uploaded.
 
 Look in `.git` and find file `logs/HEAD` with commit history and a commit with description `commit: removed .env for security reasons`
 Go back to that commit with:
