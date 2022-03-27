@@ -6,16 +6,17 @@
 
 ## Website Enumeration
 
-This is a website of some kind of an open-source API, that has a live demo mode, which heads to `api/priv`. There is a documentation page, that has a lot of information about how the API works.
-First, in the Log In section, there is an example of a log in request with an email and a password and I tried to see, if this happens to be a valid admin account.
+This is a website of some kind of an open-source API with a live demo mode, which heads to `api/priv`. There is a documentation page, that has a lot of information about how the API works.
+
+First, in the Log In section, there is an example of a log in request with an email and a password and I try to see, if this happens to be a valid admin account.
 ```
 curl -X POST -H 'Content-Type: application/json' -i 'http://10.10.11.120/api/user/login' --data '{
 "email": "root@dasith.works",
 "password": "Kekc8swFgD6zU"
 }'
 ```
-No luck here, this wasn't succesfull unfortunately. 
-So I proceeded to register a new user, using the information given.
+No luck here unfortunately. 
+So I proceed to register a new user, using the information given.
 ```
 curl -X POST -H 'Content-Type: application/json' -i 'http://10.10.11.120/api/user/register' --data '{
 "name": "testuser",
@@ -23,31 +24,32 @@ curl -X POST -H 'Content-Type: application/json' -i 'http://10.10.11.120/api/use
 "password": "testuser"
 }'
 ```
-with a succesfull response `{"user":"testuser"}`.
-
-Log In with these credentials
+with a succesfull response `{"user":"testuser"}`. I try to log in with these credentials to see that it really works.
 ```
 curl -X POST -H 'Content-Type: application/json' -i 'http://10.10.11.120/api/user/login' --data '{
 "email": "testuser@dasith.works",
 "password": "testuser"
 }'
 ```
-with succes and response `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGVzdHVzZXIiLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.WdLNQs7gWNqS1-zDfhXstyqoqm7Y2UUXK8E0tkIFkxw`
+with succes and response is `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGVzdHVzZXIiLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.WdLNQs7gWNqS1-zDfhXstyqoqm7Y2UUXK8E0tkIFkxw`. This is the JWT token that authenticates user "testuser".
 
-Try /priv
+Now I try to access `api/priv`
 ```
-curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGVzdHVzZXIiLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.WdLNQs7gWNqS1-zDfhXstyqoqm7Y2UUXK8E0tkIFkxw' -i 'http://10.10.11.120/api/priv' --data '{
-"email": "testuser@dasith.works",
-"password": "testuser"
-}'
+curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGVzdHVzZXIiLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.WdLNQs7gWNqS1-zDfhXstyqoqm7Y2UUXK8E0tkIFkxw' -i 'http://10.10.11.120/api/priv
 ```
-and response is `{"role":{"role":"you are normal user","desc":"testuser"}}`
+and response is `{"role":{"role":"you are normal user","desc":"testuser"}}`. So I logged in as a user, but I need to find an other way to gain access as admin. I'm going to keep looking on the website for any other information, that could be helpful.
 
-Try login with forged JWT token with `TOKEN_SECRET=secret`
+
+I find out tha
+
+
+
+![jwtsecret](/img/jwtfake.png)
+Then I try to login with forged JWT token with `TOKEN_SECRET=secret`
 ```
 curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.DTKfqkj0GUAI46OLUGTwoOnBEgbQ0PkWk9pVMUz95g4' -i 'http://10.10.11.120/api/priv'
 ```
-But rejected
+But it's rejected. This means, that the token secret has been chenged, before the source code was uploaded.
 
 Look in `.git` and find file `logs/HEAD` with commit history and a commit with description `commit: removed .env for security reasons`
 Go back to that commit with:
