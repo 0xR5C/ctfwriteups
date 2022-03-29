@@ -31,7 +31,7 @@ curl -X POST -H 'Content-Type: application/json' -i 'http://10.10.11.120/api/use
 "password": "testuser"
 }'
 ```
-with succes and response is `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGVzdHVzZXIiLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.WdLNQs7gWNqS1-zDfhXstyqoqm7Y2UUXK8E0tkIFkxw`. This is the JWT token that authenticates user "testuser".
+with succes and response is `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGVzdHVzZXIiLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.WdLNQs7gWNqS1-zDfhXstyqoqm7Y2UUXK8E0tkIFkxw`. This is the JWT token that authenticates user *"testuser"*.
 
 Now I try to access `api/priv`
 ```
@@ -44,6 +44,7 @@ I find out that, I can download the source code, which can be really useful.
 ## Source Code Examination
 [comment]: <> (Source code examination)
 
+## JWT Forging
 
 Using jwt.io and the JWT token I got with "testuser", I will try to forge a new one with `username="theadmin"` and the `TOKEN_SECRET=secret`(email doesn't really matter, since it checks only if `username="theadmin"`).
 ![jwtsecret](img/jwtfake.png)
@@ -85,10 +86,12 @@ curl -X GET -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjN
 
 `find / -type f -perm -u=s 2>/dev/null`
 
-Find `/opt/count` and visiting `/opt` there is a .c file also.
 
+Find `/opt/count` and visiting `/opt` there is a .c file also.
+![code](img/code.png)
 
 `strings CoreDump`
+![coredump](img/cordeump.png)
 
 
 
