@@ -218,7 +218,8 @@ First, run the executable with `/root/root.txt` as input:
 In an other terminal, I find the PID of the process and kill it:
 ![shell1](img/shell1.png)
 
-I can unpack the crash file created
+I can unpack the crash file created:
+
 ![unpack](img/unpack.png)
 
 Andn now I search for the flag in the `strings CoreDump`.
