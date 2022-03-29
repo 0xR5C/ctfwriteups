@@ -2,7 +2,7 @@
 
 ## Enumeration
 
-
+[comment]: <> (Nmap and Gobuster results)
 
 ## Website Enumeration
 
@@ -40,6 +40,9 @@ curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1
 and response is `{"role":{"role":"you are normal user","desc":"testuser"}}`. So I logged in as a user, but I need to find an other way to gain access as admin. I'm going to keep looking on the website for any other information, that could be helpful.
 
 I find out that, I can download the source code, which can be really useful.
+
+## Source Code Examination
+[comment]: <> (Source code examination)
 
 
 Using jwt.io and the JWT token I got with "testuser", I will try to forge a new one with `username="theadmin"` and the `TOKEN_SECRET=secret`(email doesn't really matter, since it checks only if `username="theadmin"`).
