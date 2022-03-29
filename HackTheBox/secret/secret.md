@@ -42,7 +42,7 @@ and response is `{"role":{"role":"you are normal user","desc":"testuser"}}`. So 
 I find out that, I can download the source code, which can be really useful.
 
 
-Using jwt.io and the JWT token I got with "testuser", I will try to forge a new one with `username="theadmin"` and the `TOKEN_SECRET=secret`(email doesn't really matter, since it checks only if `username="theadmin"`).
+Using jwt.io and the JWT token I got with "testuser", I will try to forge a new one with `name="theadmin"` and the `TOKEN_SECRET=secret`(email doesn't really matter, since it checks only if `name="theadmin"`).
 ![jwtsecret](img/jwtfake.png)
 Then I try to login with forged JWT token with `TOKEN_SECRET=secret`
 ```
