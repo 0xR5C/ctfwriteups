@@ -51,9 +51,9 @@ curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1
 But it's rejected. This means, that the token secret has been changed, before the source code was uploaded.
 
 Look in `.git` and find file `logs/HEAD` with commit history and a commit with description `commit: removed .env for security reasons`
+Go back to that commit with:
 ![gitdiff](img/gitdiff.png)
 
-Go back to that commit with:
 
 Now I can forge the JWT token, this time with the real `TOKEN_SECRET`.
 ![jwtlegit](img/jwtlegit.png)
@@ -64,7 +64,7 @@ curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1
 ```
 
 I am now authenticated as the admin! 
-`{"creds":{"role":"admin","username":"theadmin","desc":"welcome back admin"}}`
+ `{"creds":{"role":"admin","username":"theadmin","desc":"welcome back admin"}}`
 
 I have to find a way to make use of this, in order to get a reverse shell.
 
