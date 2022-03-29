@@ -1,6 +1,6 @@
 # User
 
-## Enumeration
+## Web Enumeration
 
 Nmap
 ```shell
@@ -72,7 +72,13 @@ and response is `{"role":{"role":"you are normal user","desc":"testuser"}}`. So 
 I find out that, I can download the source code, which can be really useful.
 
 ## Source Code Examination
-[comment]: <> (Source code examination)
+
+Create JWT in log in
+```js
+    // create jwt 
+    const token = jwt.sign({ _id: user.id, name: user.name , email: user.email}, process.env.TOKEN_SECRET )
+    res.header('auth-token', token).send(token);
+```
 
 ## JWT Forging
 
