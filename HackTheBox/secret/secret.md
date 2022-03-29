@@ -1,5 +1,5 @@
 # Hack The Box: Secret Write Up by 0xR5C
----
+
 ## User
 
 ### Web Enumeration
