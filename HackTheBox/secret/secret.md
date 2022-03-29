@@ -74,10 +74,78 @@ I find out that, I can download the source code, which can be really useful.
 ## Source Code Examination
 
 Create JWT in log in
+`routes/auth.js`
 ```js
     // create jwt 
     const token = jwt.sign({ _id: user.id, name: user.name , email: user.email}, process.env.TOKEN_SECRET )
     res.header('auth-token', token).send(token);
+```
+
+`/priv`
+`rotes/private.js`
+```js
+router.get('/priv', verifytoken, (req, res) => {
+   // res.send(req.user)
+
+    const userinfo = { name: req.user }
+
+    const name = userinfo.name.name;
+    
+    if (name == 'theadmin'){
+        res.json({
+            creds:{
+                role:"admin", 
+                username:"theadmin",
+                desc : "welcome back admin,"
+            }
+        })
+    }
+    else{
+        res.json({
+            role: {
+                role: "you are normal user",
+                desc: userinfo.name.name
+            }
+        })
+    }
+})
+```
+
+```js
+router.get('/logs', verifytoken, (req, res) => {
+    const file = req.query.file;
+    const userinfo = { name: req.user }
+    const name = userinfo.name.name;
+    
+    if (name == 'theadmin'){
+        const getLogs = `git log --oneline ${file}`;
+        exec(getLogs, (err , output) =>{
+            if(err){
+                res.status(500).send(err);
+                return
+            }
+            res.json(output);
+        })
+    }
+    else{
+        res.json({
+            role: {
+                role: "you are normal user",
+                desc: userinfo.name.name
+            }
+        })
+    }
+})
+
+router.use(function (req, res, next) {
+    res.json({
+        message: {
+
+            message: "404 page not found",
+            desc: "page you are looking for is not found. "
+        }
+    })
+});
 ```
 
 ## JWT Forging
