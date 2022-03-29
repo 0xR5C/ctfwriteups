@@ -91,7 +91,7 @@ Find `/opt/count` and visiting `/opt` there is a .c file also.
 ![code](img/code.png)
 
 `strings CoreDump`
-![coredump](img/cordeump.png)
+![coredump](img/coredump.png)
 
 
 
