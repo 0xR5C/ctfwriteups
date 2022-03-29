@@ -200,7 +200,14 @@ This program, reads a path from user input, loads it in it's memory and counts h
 
 Now I search the flag in the `strings CoreDump`.
 
+![shell1](img/shell1.png)
+
+![shell2](img/shell2.png)
+
+![unpack](img/unpack.png)
+
 ![coredump](img/coredump.png)
+
 
 **Root Flag** ✔️!!!
 
