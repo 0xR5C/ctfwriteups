@@ -1,6 +1,8 @@
-# User
+# Hack The Box: Secret Write Up by 0xR5C
+---
+## User
 
-## Web Enumeration
+### Web Enumeration
 
 Starting with Nmap.
 ```shell
@@ -36,7 +38,7 @@ Using Gobuster for directories with medium wordlist after the Nmap.
 ```
 Nothing of interest in here either, all of these unprotected directories are already visible from withing the site. So I have to dig a little deeper in the website.
 
-## Website Enumeration
+### Website Enumeration
 
 This is a website of some kind of an open-source API with a live demo mode, which heads to `api/priv`. There is a documentation page, that has a lot of information about how the API works.
 
@@ -73,7 +75,7 @@ and response is `{"role":{"role":"you are normal user","desc":"testuser"}}`. So 
 
 I can download the source code, which can be really useful.
 
-## Source Code Examination
+### Source Code Examination
 
 This is the source code of a javascript Express website. The `routes` directory has a couple of interesting javaScript files for the API's endpoints.
 
@@ -160,7 +162,7 @@ It executes code using user input without sanitizing it, which means that I can 
 
 Checking in the `local-web` directory, there are two hidden files: a `.git` and a `.env`. In `.env`, there I find the `TOKEN_SECRET=secret` inside.
 
-## JWT Forging
+### JWT Forging
 
 Using jwt.io and the JWT token I got with "testuser", I will try to forge a new one with `name="theadmin"` and the `TOKEN_SECRET=secret`(email doesn't really matter, since it checks only if `name="theadmin"`).
 
@@ -201,7 +203,7 @@ curl -X GET -H 'auth-token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MjN
 
 I got the reverse shell and the **User Flag** ✔️!!!
 
-# Privillege Escalation
+## Privillege Escalation
 
 User *"dasith"* doesn't seem to have any `sudo` rights. So I will search for any SUID binaries, that may be exploitable.
 
