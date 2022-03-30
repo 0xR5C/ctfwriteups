@@ -40,7 +40,7 @@ Nothing of interest in here either, all of these unprotected directories are alr
 
 ### Website Enumeration
 
-This is a website of some kind of an open-source API with a live demo mode, which heads to `api/priv`. There is a documentation page, that has a lot of information about how the API works.
+This is a website of some kind of an open-source API with a live demo mode, which redirects to `api/priv`. There is a documentation page, that has a lot of information about how the API works.
 
 First, in the Log In section, there is an example of a log in request with an email and a password and I try to see, if this happens to be a valid admin account.
 ```
