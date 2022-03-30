@@ -36,7 +36,7 @@ Using Gobuster for directories with medium wordlist after the Nmap.
 /docs                 (Status: 200) [Size: 20720]
 /download             (Status: 301) [Size: 183] [--> /download/]
 ```
-Nothing of interest in here either, all of these unprotected directories are already visible from withing the site. So I have to dig a little deeper in the website.
+Nothing of interest in here either, all of these unprotected directories are already visible from withing the site. So I have to dig a little deeper on the website.
 
 ### Website Enumeration
 
@@ -120,7 +120,7 @@ router.get('/priv', verifytoken, (req, res) => {
 This means, that if I manage to find the TOKEN_SECRET, I can just forge a new one with username equal to *"theadmin"* and gain admin authentication.
 
 
-The second one isn't mentioned anywhere in the website, so it's a hidden endpoint, that's intended only for the admin and it gives him the ability to find the git log of a file.
+The second one isn't mentioned anywhere on the website, so it's a hidden endpoint, that's intended only for the admin and it gives him the ability to find the git log of a file.
 
 ```js
 router.get('/logs', verifytoken, (req, res) => {
