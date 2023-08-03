@@ -36,7 +36,7 @@ Using Gobuster for directories with medium wordlist after the Nmap.
 /docs                 (Status: 200) [Size: 20720]
 /download             (Status: 301) [Size: 183] [--> /download/]
 ```
-Nothing of interest in here either, all of these unprotected directories are already visible from withing the site. So I have to dig a little deeper on the website.
+Nothing of interest in here either, all of these unprotected directories are already visible from within the site. So I have to dig a little deeper into the website.
 
 ### Website Enumeration
 
